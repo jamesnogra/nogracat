@@ -9,6 +9,7 @@ class CatComponent extends React.Component {
         selectedBreedImages: [],
         selectedBreed: [],
         selectedImage: "",
+        selectedCatIndex: -1,
         showDetails: false
     };
 
@@ -29,6 +30,11 @@ class CatComponent extends React.Component {
     // Back button is clicked
     backButtonClicked = () => {
         this.changeShowDetails(false);
+    }
+
+    // Load more images button is clicked
+    loadMoreImagesButtonClicked = () => {
+        this.loadCatImages(100);
     }
 
     // Load from API the cat breed during initial page load
@@ -52,12 +58,16 @@ class CatComponent extends React.Component {
         if (evt.target.value === "") {
             this.setState({
                 selectedBreedImages: [],
-                selectedBreed: []
+                selectedBreed: [],
+                selectedCatIndex: -1
             });
             return;
         }
         // Wait for the state to be set before loading the images
-        this.setState({ selectedBreed:  this.state.catBreeds[evt.target.value]} , () => {
+        this.setState({ 
+            selectedBreed: this.state.catBreeds[evt.target.value],
+            selectedCatIndex: evt.target.value
+        } , () => {
             this.loadCatImages(10);
         })
     }
@@ -83,7 +93,7 @@ class CatComponent extends React.Component {
                 <h1>Cat Browser {this.state.test}</h1>
                 {!this.state.showDetails &&
                     <div>
-                        <select onChange={this.selectBreed} className="form-control" name="cat-breed" id="cat-breed">
+                        <select value={this.state.selectedCatIndex} onChange={this.selectBreed} className="form-control" name="cat-breed" id="cat-breed">
                             <option value="">Select a Breed</option>
                             {this.state.catBreeds.map((cat, index) => {
                                 return <option key={cat.id} value={index}>{cat.name}</option>
@@ -99,7 +109,7 @@ class CatComponent extends React.Component {
                         </div>
                         {typeof this.state.selectedBreed.name !== 'undefined' && this.state.selectedBreed.name.length > 0 &&
                             <center>
-                                <button className="btn btn-success" onClick={() => {this.loadCatImages(100)}}>Load more</button>
+                                <button className="btn btn-success" onClick={this.loadMoreImagesButtonClicked}>Load more</button>
                             </center>
                         }
                     </div>
