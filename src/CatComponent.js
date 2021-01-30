@@ -10,6 +10,8 @@ class CatComponent extends React.Component {
         selectedBreed: [],
         selectedImage: "",
         selectedCatIndex: -1,
+        imagesToShow: 0,
+        showLoadMoreImages: true,
         showDetails: false
     };
 
@@ -17,14 +19,14 @@ class CatComponent extends React.Component {
     // showDetails=false means list of cat images will be shown
     // showDetails=true means details of selected cat will be show
     // Also happens in CatImagesComponent
-    changeShowDetails= (val) => {
-        this.setState({showDetails: val});
+    changeShowDetails = (val) => {
+        this.setState({ showDetails: val });
     }
 
     // Change selectedImage
     // Happens in CatImagesComponent
     changeSelectedImage = (url) => {
-        this.setState({selectedImage: url});
+        this.setState({ selectedImage: url });
     }
 
     // Back button is clicked
@@ -34,7 +36,11 @@ class CatComponent extends React.Component {
 
     // Load more images button is clicked
     loadMoreImagesButtonClicked = () => {
-        this.loadCatImages(100);
+        // Add 10 to imagesToShow every time the load more images button is clicked
+        this.setState({ imagesToShow: this.state.imagesToShow + 10 }, () => {
+            this.loadCatImages(this.state.imagesToShow);
+        });
+
     }
 
     // Load from API the cat breed during initial page load
@@ -64,10 +70,12 @@ class CatComponent extends React.Component {
             return;
         }
         // Wait for the state to be set before loading the images
-        this.setState({ 
+        this.setState({
             selectedBreed: this.state.catBreeds[evt.target.value],
-            selectedCatIndex: evt.target.value
-        } , () => {
+            selectedCatIndex: evt.target.value,
+            imagesToShow: 10,
+            showLoadMoreImages: true
+        }, () => {
             this.loadCatImages(10);
         })
     }
@@ -76,11 +84,15 @@ class CatComponent extends React.Component {
     loadCatImages = (limit) => {
         // Make the request to get cat images initially at 10
         fetch(
-            `${process.env.REACT_APP_CAT_IMAGES_URL}?api_key=${process.env.REACT_APP_CAT_API_KEY}&breed_id=${this.state.selectedBreed.id}&limit=${limit}`
+            `${process.env.REACT_APP_CAT_IMAGES_URL}?api_key=${process.env.REACT_APP_CAT_API_KEY}&breed_id=${this.state.selectedBreed.id}&limit=${limit}&order=ASC`
         ).then(
             (response) => response.json()
         ).then((data) => {
             this.setState({ selectedBreedImages: data });
+            // Check if the imagesToShow is greater than data.length, then hide the load images button
+            if (this.state.imagesToShow > data.length) {
+                this.setState({ showLoadMoreImages: false });
+            }
         }).catch((error) => {
             alert(process.env.REACT_APP_API_ERROR_MESSAGE);
             console.log(error);
@@ -107,7 +119,7 @@ class CatComponent extends React.Component {
                                 return <CatImagesComponent changeSelectedImage={this.changeSelectedImage} changeShowDetails={this.changeShowDetails} imageUrl={img.url} key={img.id} />
                             })}
                         </div>
-                        {typeof this.state.selectedBreed.name !== 'undefined' && this.state.selectedBreed.name.length > 0 &&
+                        {typeof this.state.selectedBreed.name !== 'undefined' && this.state.selectedBreed.name.length > 0 && this.state.showLoadMoreImages &&
                             <center>
                                 <button className="btn btn-success" onClick={this.loadMoreImagesButtonClicked}>Load more</button>
                             </center>
