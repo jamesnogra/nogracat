@@ -2,6 +2,7 @@ import React from 'react';
 
 class CatComponent extends React.Component {
 
+    // When View Details button is clicked
     viewDetails = (image_url) => {
         // Change the selected image of CatComponent
         this.props.changeSelectedImage(image_url);
