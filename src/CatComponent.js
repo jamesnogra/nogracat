@@ -16,7 +16,7 @@ class CatComponent extends React.Component {
     // showDetails=false means list of cat images will be shown
     // showDetails=true means details of selected cat will be show
     // Also happens in CatImagesComponent
-    changeShowDetailsFlag = (val) => {
+    changeShowDetails= (val) => {
         this.setState({showDetails: val});
     }
 
@@ -24,6 +24,11 @@ class CatComponent extends React.Component {
     // Happens in CatImagesComponent
     changeSelectedImage = (url) => {
         this.setState({selectedImage: url});
+    }
+
+    // Back button is clicked
+    backButtonClicked = () => {
+        this.changeShowDetails(false);
     }
 
     // Load from API the cat breed during initial page load
@@ -89,7 +94,7 @@ class CatComponent extends React.Component {
                         }
                         <div className="cat-images">
                             {this.state.selectedBreedImages.map((img) => {
-                                return <CatImagesComponent changeSelectedImage={this.changeSelectedImage} changeShowDetailsFlag={this.changeShowDetailsFlag} imageUrl={img.url} key={img.id} />
+                                return <CatImagesComponent changeSelectedImage={this.changeSelectedImage} changeShowDetails={this.changeShowDetails} imageUrl={img.url} key={img.id} />
                             })}
                         </div>
                         {typeof this.state.selectedBreed.name !== 'undefined' && this.state.selectedBreed.name.length > 0 &&
@@ -101,7 +106,9 @@ class CatComponent extends React.Component {
                 }
                 {this.state.showDetails &&
                     <div>
-                        <button className="btn btn-success" onClick={() => {this.changeShowDetailsFlag(false)}}>Back</button>
+                        <center>
+                            <button className="btn btn-success" onClick={this.backButtonClicked}>Back</button>
+                        </center>
                         <CatDetails catDetails={this.state.selectedBreed} selectedImage={this.state.selectedImage} />
                     </div>
                 }

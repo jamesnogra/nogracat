@@ -7,7 +7,7 @@ class CatComponent extends React.Component {
         // Change the selected image of CatComponent
         this.props.changeSelectedImage(image_url);
         // Set the viewer to show details mode
-        this.props.changeShowDetailsFlag(true);
+        this.props.changeShowDetails(true);
     }
 
     render() {
